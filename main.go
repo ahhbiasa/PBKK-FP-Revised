@@ -16,7 +16,6 @@ var (
 )
 
 func main() {
-
 	defer CategoryRepository.CloseDB()
 
 	router := gin.Default()
@@ -73,6 +72,27 @@ func main() {
 				ctx.HTML(http.StatusBadRequest, "createcategory.html", gin.H{"error": err.Error()})
 			} else {
 				ctx.Redirect(http.StatusFound, "/view/categories") // Redirect to categories page
+			}
+		})
+
+		// Show the edit category page
+		viewRoutes.GET("/categories/edit/:id", func(ctx *gin.Context) {
+			// Handle fetching the category by ID for editing
+			if err := CategoryController.EditCategory(ctx); err != nil {
+				// Render the edit page with an error if there's an issue
+				ctx.HTML(http.StatusInternalServerError, "editcategory.html", gin.H{"error": err.Error()})
+			}
+		})
+
+		// Handle form submission for updating the category
+		viewRoutes.POST("/categories/edit/:id", func(ctx *gin.Context) {
+			err := CategoryController.Update(ctx)
+			if err != nil {
+				// If there is an error during update, render the edit form with the error message
+				ctx.HTML(http.StatusBadRequest, "editcategory.html", gin.H{"error": err.Error()})
+			} else {
+				// On successful update, redirect to the categories list
+				ctx.Redirect(http.StatusFound, "/view/categories")
 			}
 		})
 

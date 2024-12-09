@@ -10,6 +10,7 @@ type CategoryService interface {
 	Update(category entities.Category)
 	Delete(category entities.Category)
 	FindAll() []entities.Category
+	GetCategoryByID(id int) (entities.Category, error)
 }
 
 type categoryService struct {
@@ -37,4 +38,8 @@ func (service *categoryService) Update(category entities.Category) {
 
 func (service *categoryService) Delete(category entities.Category) {
 	service.CategoryryRepository.Delete(category)
+}
+
+func (service *categoryService) GetCategoryByID(id int) (entities.Category, error) {
+	return service.CategoryryRepository.FindByID(id)
 }

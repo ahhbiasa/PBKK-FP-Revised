@@ -15,6 +15,7 @@ type CategoryRepository interface {
 	Update(category entities.Category)
 	Delete(category entities.Category)
 	FindAll() []entities.Category
+	FindByID(id int) (entities.Category, error)
 	CloseDB()
 }
 
@@ -61,4 +62,13 @@ func (db *database) FindAll() []entities.Category {
 	var categories []entities.Category
 	db.connection.Set("gorm:auto_preload", true).Find(&categories)
 	return categories
+}
+
+// FindByID retrieves a category by its ID
+func (db *database) FindByID(id int) (entities.Category, error) {
+	var category entities.Category
+	if err := db.connection.First(&category, id).Error; err != nil {
+		return category, err // Return error if category is not found
+	}
+	return category, nil
 }
