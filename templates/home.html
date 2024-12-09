@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Go CRUD | Group 11</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand text-light" href="/" style="margin: 0; padding: 0;">
+          <img src="/img/go-fp-logo.png" alt="logo" style="width: 80px; height: auto;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link text-light" href="/products">Products</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light" href="/categories">Categories</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container">
+        <h1>Welcome to Group 11's Go CRUD Project</h1>
+        <p>Effortlessly manage your products and categories with our Go-powered CRUD application.</p>
+        <a href="/products" class="btn btn-primary btn-lg mt-3">Explore Products</a>
+        <a href="/view/categories" class="btn btn-secondary btn-lg mt-3">Manage Categories</a>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">About This Project</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card bg-dark text-light mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Product Management</h5>
+              <p class="card-text">Easily add, edit, delete, and view products in your inventory. Simplify your business operations with a robust backend powered by Go.</p>
+              <a href="/products" class="card-link">Go to Products</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card bg-dark text-light mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Category Management</h5>
+              <p class="card-text">Organize your items into categories to improve navigation and usability. Manage everything in one place with ease.</p>
+              <a href="/view/categories" class="card-link">Go to Categories</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2024 Group 11 Go CRUD Project | Powered by Go & Bootstrap</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-1Q7PpvPt4RV9kAdKuMr7eJvGHIRd2wB2x+9HFzzN9RSF9EKBDCe1mIHdCQTNGcmK" crossorigin="anonymous"></script>
+  </body>
+  <style>
+    body {
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #2c3e50;
+    }
+    .hero-section {
+      background: url('https://source.unsplash.com/1920x500/?technology,programming') no-repeat center center;
+      background-size: cover;
+      padding: 100px 20px;
+      text-align: center;
+    }
+    .hero-section h1 {
+      color: #fff;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    .hero-section p {
+      color: #ddd;
+      font-size: 1.2rem;
+    }
+    .card-link {
+      text-decoration: none;
+      color: #007bff;
+    }
+    .card-link:hover {
+      text-decoration: underline;
+    }
+    footer {
+      background-color: #2c3e50;
+      color: #aaa;
+      text-align: center;
+      padding: 8px 0;
+    }
+  </style>
+</html>
