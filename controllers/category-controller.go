@@ -22,6 +22,7 @@ type controller struct {
 	service service.CategoryService
 }
 
+// New creates a new CategoryController with the given service.
 func New(service service.CategoryService) CategoryController {
 	return &controller{
 		service: service,
@@ -57,32 +58,19 @@ func (c *controller) ShowAll(ctx *gin.Context) {
 }
 
 func (c *controller) Update(ctx *gin.Context) error {
-	// Parse the category ID from the URL parameter
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		return err
 	}
 
-	// Fetch the existing category by ID from the service
-	category, err := c.service.GetCategoryByID(int(id))
-	if err != nil {
-		return err // If category not found or other error, return it
-	}
-
-	// Prepare to bind the updated category data from the form (not JSON)
 	var updatedCategory entities.Category
 	if err := ctx.ShouldBind(&updatedCategory); err != nil {
-		return err // Return error if data binding fails
+		return err
 	}
 
-	// Set the ID to ensure the updated category retains its original ID
-	updatedCategory.ID = category.ID
-
-	// Update the category in the service
+	updatedCategory.ID = id
 	c.service.Update(updatedCategory)
-
-	// After successful update, redirect to the category listing page
-	ctx.Redirect(http.StatusFound, "/view/categories")
+	ctx.JSON(http.StatusOK, gin.H{"message": "Category updated successfully"})
 	return nil
 }
 
