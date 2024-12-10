@@ -6,10 +6,10 @@ import (
 )
 
 type CategoryService interface {
-	Save(entities.Category) entities.Category
+	Save(category entities.Category) (entities.Category, error)
 	Update(category entities.Category)
 	Delete(category entities.Category)
-	FindAll() []entities.Category
+	FindAll() ([]entities.Category, error) // Include error in the return value
 	GetCategoryByID(id int) (entities.Category, error)
 }
 
@@ -23,12 +23,15 @@ func New(repo repository.CategoryRepository) CategoryService {
 	}
 }
 
-func (service *categoryService) Save(category entities.Category) entities.Category {
-	service.CategoryryRepository.Save(category)
-	return category
+func (service *categoryService) Save(category entities.Category) (entities.Category, error) {
+	err := service.CategoryryRepository.Save(category)
+	if err != nil {
+		return entities.Category{}, err // Return an empty category and the error
+	}
+	return category, nil // Return the saved category and nil error
 }
 
-func (service *categoryService) FindAll() []entities.Category {
+func (service *categoryService) FindAll() ([]entities.Category, error) {
 	return service.CategoryryRepository.FindAll()
 }
 

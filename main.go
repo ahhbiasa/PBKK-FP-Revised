@@ -22,10 +22,17 @@ func main() {
 
 	router.LoadHTMLGlob("templates/*.html")
 
+	router.Static("/static", "./static")
+
 	apiRoutes := router.Group("/api")
 	{
 		apiRoutes.GET("/categories", func(ctx *gin.Context) {
-			ctx.JSON(200, CategoryController.FindAll())
+			categories, err := CategoryController.FindAll() // Handle the error properly
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			ctx.JSON(200, categories) // Return the categories as JSON
 		})
 
 		apiRoutes.POST("/categories", func(ctx *gin.Context) {
@@ -40,7 +47,7 @@ func main() {
 		apiRoutes.PUT("/categories/:id", func(ctx *gin.Context) {
 			err := CategoryController.Update(ctx)
 			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				// ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
 				ctx.JSON(http.StatusOK, gin.H{"message": "Category updated successfully"})
 			}

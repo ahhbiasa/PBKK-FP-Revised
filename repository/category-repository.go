@@ -11,10 +11,10 @@ import (
 var DB *gorm.DB
 
 type CategoryRepository interface {
-	Save(category entities.Category)
+	Save(category entities.Category) error
 	Update(category entities.Category)
 	Delete(category entities.Category)
-	FindAll() []entities.Category
+	FindAll() ([]entities.Category, error)
 	FindByID(id int) (entities.Category, error)
 	CloseDB()
 }
@@ -24,18 +24,14 @@ type database struct {
 }
 
 func New() CategoryRepository {
-	// Define the DSN
-	dsn := "root:@tcp(127.0.0.1:3306)/go-crud?charset=utf8mb4&parseTime=True&loc=Local"
-
-	// Connect to the database using GORM
+	dsn := "root:Xadenth04*@tcp(localhost:3306)/go_crud?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to connect to database: %v", err) // Provide more details
 	}
-
-	log.Println("Connected to the database using GORM")
+	log.Println("Connected to the database successfully")
 	DB = db
-	return &database{connection: db} // Add this return statement
+	return &database{connection: db}
 }
 
 func (db *database) CloseDB() {
@@ -46,8 +42,9 @@ func (db *database) CloseDB() {
 	dbConn.Close()
 }
 
-func (db *database) Save(category entities.Category) {
-	db.connection.Create(&category)
+func (db *database) Save(category entities.Category) error {
+	result := db.connection.Create(&category)
+	return result.Error
 }
 
 func (db *database) Update(category entities.Category) {
@@ -58,10 +55,10 @@ func (db *database) Delete(category entities.Category) {
 	db.connection.Delete(&category)
 }
 
-func (db *database) FindAll() []entities.Category {
+func (db *database) FindAll() ([]entities.Category, error) {
 	var categories []entities.Category
-	db.connection.Set("gorm:auto_preload", true).Find(&categories)
-	return categories
+	result := db.connection.Set("gorm:auto_preload", true).Find(&categories)
+	return categories, result.Error
 }
 
 // FindByID retrieves a category by its ID

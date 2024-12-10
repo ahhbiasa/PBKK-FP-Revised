@@ -5,12 +5,13 @@ import (
 	"PBKK-FP-Revised/service"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type CategoryController interface {
-	FindAll() []entities.Category
+	FindAll() ([]entities.Category, error) // Update to include error
 	Save(ctx *gin.Context) error
 	Update(ctx *gin.Context) error
 	Delete(ctx *gin.Context) error
@@ -29,31 +30,50 @@ func New(service service.CategoryService) CategoryController {
 	}
 }
 
-func (c *controller) FindAll() []entities.Category {
-	return c.service.FindAll()
+func (c *controller) FindAll() ([]entities.Category, error) {
+	categories, err := c.service.FindAll() // Get categories from the service
+	if err != nil {
+		return nil, err // Return nil categories and the error
+	}
+	return categories, nil // Return the categories and nil error
 }
 
 func (c *controller) Save(ctx *gin.Context) error {
 	var category entities.Category
 	err := ctx.ShouldBind(&category)
 	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err
 	}
-	c.service.Save(category)
+
+	// Set created_at to the current time
+	category.CreatedAt = time.Now()
+
+	savedCategory, err := c.service.Save(category)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message":  "Category created successfully",
+		"category": savedCategory,
+	})
 	return nil
 }
 
 func (c *controller) ShowAll(ctx *gin.Context) {
-	// Fetch all categories from the service
-	categories := c.service.FindAll()
-
-	// Prepare the data to pass to the template
-	data := gin.H{
-		"name":       "Category Name", // This could be a static value or a dynamic one if needed
-		"categories": categories,      // List of categories to render in the template
+	categories, err := c.service.FindAll()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	// Render the HTML template and pass the data
+	data := gin.H{
+		"name":       "Category Name",
+		"categories": categories,
+	}
+
 	ctx.HTML(http.StatusOK, "indexcategories.html", data)
 }
 
@@ -68,7 +88,20 @@ func (c *controller) Update(ctx *gin.Context) error {
 		return err
 	}
 
+	// Set the ID
 	updatedCategory.ID = id
+
+	// Do not modify CreatedAt during update
+	var originalCategory entities.Category
+	originalCategory, err = c.service.GetCategoryByID(id) // Fetch the original category
+	if err != nil {
+		return err
+	}
+
+	// Keep the original CreatedAt value intact during the update
+	updatedCategory.CreatedAt = originalCategory.CreatedAt
+
+	// Proceed with the update
 	c.service.Update(updatedCategory)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Category updated successfully"})
 	return nil
