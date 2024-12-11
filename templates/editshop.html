@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Go CRUD</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg px-5">
+        <div class="container">
+            <a class="navbar-brand text-light" href="/view/" style="margin: 0; padding: 0;">
+            <img src="/static/img/go-fp-logo.png" alt="logo" style="width: 80px; height: auto;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item px-1">
+                <a class="btn btn-primary" href="/view/shops">Shops</a>
+                </li>
+                <li class="nav-item px-1">
+                <a class="btn btn-primary" href="/view/products">Products</a>
+                </li>
+                <li class="nav-item px-1">
+                <a class="btn btn-primary" href="/view/categories">Categories</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+    <div class="container mt-5">
+        <h3>Edit Shop</h3>
+        <div id="alert" class="alert d-none" role="alert"></div>
+        <form id="editCategoryForm">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" autocomplete="off" value="{{ .shop.Name }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea id="address" class="form-control" rows="3">{{ .shop.Address }}</textarea>
+          </div>
+          <div class="text-end">
+            <a href="/view/shops" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary" id="saveButton">Save</button>
+          </div>
+        </form>        
+        </div>
+    </div>
+  </body>
+  
+  <style>
+    body {
+      background-color: #B6A28E;
+      color: #ffffff;
+    }
+    nav {
+      background-color: #9A7E6F;
+    }
+    .navbar-brand {
+      color: #1e2a3a;
+    }
+    .nav-link {
+      color: #1e2a3a;
+    }
+    h2 {
+      color: #54473F;
+    }
+    .thick-hr {
+      background-color: #54473F;
+      height: 2px; 
+      border: none; 
+    }
+    h3 {
+      color: #54473F;
+    }
+    .btn-primary {
+      background-color: #54473F;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #FFAD60;
+      border: none;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+    .table {
+      color: #ffffff;
+    }
+    .table-dark {
+      background-color: #1e2a3a;
+    }
+  </style>
+  <script>
+    document.getElementById('saveButton').addEventListener('click', async () => {
+      const name = document.getElementById('name').value;
+      const address = document.getElementById('address').value;
+      const shopId = {{ .shop.ID }};
+      const alertBox = document.getElementById('alert');
+      console.log(address)
+    
+      try {
+        const response = await fetch(`/api/shops/${shopId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, address }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alertBox.className = 'alert alert-success';
+          alertBox.textContent = result.message;
+          alertBox.classList.remove('d-none');
+        } else {
+          throw new Error(result.error || 'An error occurred');
+        }
+      } catch (error) {
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = error.message;
+        alertBox.classList.remove('d-none');
+      }
+    });
+  </script>
+</html>

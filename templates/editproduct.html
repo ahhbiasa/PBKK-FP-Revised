@@ -30,84 +30,111 @@
     </nav>
 
     <div class="container mt-5">
-      <h3>Edit Category</h3>
+      <h3>Edit Product</h3>
       <div id="alert" class="alert d-none" role="alert"></div>
-      <form id="editCategoryForm">
+      <form id="editProductForm">
         <div class="mb-3">
-          <label for="name" class="form-label">Category Name</label>
-          <input type="text" id="name" class="form-control" placeholder="Enter category name" value="{{ .category.Name }}">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" autocomplete="off" value="{{ .product.Name }}">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Stock</label>
+            <input type="number" class="form-control" name="stock" autocomplete="off" value="{{ .product.Stock }}">
+        </div>
+        {{ range .category }} 
+          <p>{{ .Name }}</p>
+        {{ end }}
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3">{{ .product.Description }}</textarea>
         </div>
         <div class="text-end">
-          <button type="button" class="btn btn-secondary" onclick="window.location.href='/view/categories'">Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='/view/products'">Cancel</button>
           <button type="button" class="btn btn-primary" id="saveButton">Save</button>
         </div>
       </form>
     </div>
   </body>
 
-    <style>
-      body {
-        background-color: #001f3d; /* Navy Blue background */
-        color: #ffffff; /* White text */
-      }
-      nav {
-        background-color: #003366; /* Darker navy blue for the container */
-      }
-      .form-label {
-        color: #ffffff;
-      }
-      .btn-secondary {
-        background-color: #006699; /* Slightly lighter navy for the cancel button */
-        border: none;
-      }
-      .btn-secondary:hover {
-        background-color: #004d66;
-      }
-      .btn-primary {
-        background-color: #004d66; /* Primary button navy blue */
-        border: none;
-      }
-      .btn-primary:hover {
-        background-color: #003354;
-      }
-      .alert {
-        margin-top: 20px;
-      }
-    </style>
+  <style>
+    body {
+      background-color: #FFECC8;
+      color: #ffffff;
+    }
+    nav {
+      background-color: #FFD09B;
+    }
+    .navbar-brand {
+      color: #1e2a3a;
+    }
+    .nav-link {
+      color: #1e2a3a;
+    }
+    h2 {
+      color: #C96868;
+    }
+    .thick-hr {
+      background-color: #C96868;
+      height: 2px; 
+      border: none; 
+    }
+    h3 {
+      color: #FFB0B0;
+    }
+    .btn-primary {
+      background-color: #FFB0B0;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #C96868;
+      border: none;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+    .table {
+      color: #ffffff;
+    }
+    .table-dark {
+      background-color: #1e2a3a;
+    }
+  </style>
+  
     <script>
-      document.getElementById('saveButton').addEventListener('click', async () => {
+        document.getElementById('saveButton').addEventListener('click', async () => {
         const name = document.getElementById('name').value;
-        const categoryId = {{ .category.ID }};
+        const productId = {{ .product.ID }};
         const alertBox = document.getElementById('alert');
 
         try {
-          const response = await fetch(`/api/categories/${categoryId}`, {
+            const response = await fetch(`/api/products/${productId}`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ name }),
-          });
+            });
 
-          const result = await response.json();
+            const result = await response.json();
 
-          if (response.ok) {
+            if (response.ok) {
             alertBox.className = 'alert alert-success';
             alertBox.textContent = result.message;
             alertBox.classList.remove('d-none');
 
             setTimeout(() => {
-              window.location.href = '/view/categories';
+                window.location.href = '/view/products';
             }, 2000);
-          } else {
+            } else {
             throw new Error(result.error || 'An error occurred');
-          }
+            }
         } catch (error) {
-          alertBox.className = 'alert alert-danger';
-          alertBox.textContent = error.message;
-          alertBox.classList.remove('d-none');
+            alertBox.className = 'alert alert-danger';
+            alertBox.textContent = error.message;
+            alertBox.classList.remove('d-none');
         }
-      });
+        });
     </script>
   </body>
 </html>

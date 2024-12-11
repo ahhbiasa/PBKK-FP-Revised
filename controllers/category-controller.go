@@ -24,7 +24,7 @@ type controller struct {
 }
 
 // New creates a new CategoryController with the given service.
-func New(service service.CategoryService) CategoryController {
+func NewCategoryController(service service.CategoryService) CategoryController {
 	return &controller{
 		service: service,
 	}
@@ -49,16 +49,12 @@ func (c *controller) Save(ctx *gin.Context) error {
 	// Set created_at to the current time
 	category.CreatedAt = time.Now()
 
-	savedCategory, err := c.service.Save(category)
+	err = c.service.Save(category)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message":  "Category created successfully",
-		"category": savedCategory,
-	})
 	return nil
 }
 

@@ -36,17 +36,20 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-6">
-          <h2 class="text-center mt-5">Add Categories</h2>
-          <p class="text-center">Create new categories to better organize your product inventory.</p>
+          <h2 class="text-center mt-5">Add Shop</h2>
           <hr>
 
-          <form action="/api/categories/add" method="post">
+          <form action="/api/shops/add" method="post">
             <div class="mb-3">
-              <label class="form-label">Category Name</label>
-              <input type="text" class="form-control" name="name" autocomplete="off" placeholder="Enter category name">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="3"></textarea>
             </div>
             <div class="text-end">
-              <a href="/view/categories" class="btn btn-secondary">Back</a>
+              <a href="/view/shops" class="btn btn-secondary">Back</a>
               <button type="submit" class="btn btn-primary">Save</button>
             </div>
           </form>
@@ -60,26 +63,45 @@
   
   <style>
     body {
-      background-color: #0d1b2a; /* Dark navy background */
-      color: #ffffff; /* White text */
+      background-color: #b6a18e;
+      color: #ffffff;
     }
     nav {
-      background-color: #142c44; /* Slightly lighter navy */
+      background-color: #9A7E6F;
+    }
+    .navbar-brand {
+      color: #1e2a3a;
+    }
+    .nav-link {
+      color: #1e2a3a;
     }
     h2 {
-      color: #4fb3f6; /* Light blue for headings */
+      color: #54473F;
+    }
+    .thick-hr {
+      background-color: #54473F;
+      height: 2px; 
+      border: none; 
+    }
+    h3 {
+      color: #54473F;
     }
     .btn-primary {
-      background-color: #4fb3f6;
+      background-color: #54473F;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #FFAD60;
       border: none;
     }
     .btn-secondary {
       background-color: #6c757d;
     }
-    .form-control {
-      background-color: #1e2a3a;
+    .table {
       color: #ffffff;
-      border: 1px solid #4fb3f6;
+    }
+    .table-dark {
+      background-color: #1e2a3a;
     }
   </style>
 </html>

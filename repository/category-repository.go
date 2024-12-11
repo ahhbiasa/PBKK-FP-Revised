@@ -23,7 +23,7 @@ type database struct {
 	connection *gorm.DB
 }
 
-func New() CategoryRepository {
+func NewCategoryRepository() CategoryRepository {
 	dsn := "root:Xadenth04*@tcp(localhost:3306)/go_crud?parseTime=true"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

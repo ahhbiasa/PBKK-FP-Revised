@@ -10,13 +10,22 @@ import (
 )
 
 var (
-	CategoryRepository repository.CategoryRepository  = repository.New()
-	CategoryService    service.CategoryService        = service.New(CategoryRepository)
-	CategoryController controllers.CategoryController = controllers.New(CategoryService)
+	CategoryRepository repository.CategoryRepository  = repository.NewCategoryRepository()
+	CategoryService    service.CategoryService        = service.NewCategoryController(CategoryRepository)
+	CategoryController controllers.CategoryController = controllers.NewCategoryController(CategoryService)
+
+	ProductRepository repository.ProductRepository  = repository.NewProductRepository()
+	ProductService    service.ProductService        = service.NewProductService(ProductRepository, CategoryRepository, ShopRepository)
+	ProductController controllers.ProductController = controllers.NewProductController(ProductService)
+
+	ShopRepository repository.ShopRepository  = repository.NewShopRepository()
+	ShopService    service.ShopService        = service.NewShopService(ShopRepository)
+	ShopController controllers.ShopController = controllers.NewShopController(ShopService)
 )
 
 func main() {
 	defer CategoryRepository.CloseDB()
+	defer ShopRepository.CloseDB()
 
 	router := gin.Default()
 
@@ -26,21 +35,13 @@ func main() {
 
 	apiRoutes := router.Group("/api")
 	{
-		apiRoutes.GET("/categories", func(ctx *gin.Context) {
-			categories, err := CategoryController.FindAll() // Handle the error properly
-			if err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-			ctx.JSON(200, categories) // Return the categories as JSON
-		})
 
-		apiRoutes.POST("/categories", func(ctx *gin.Context) {
+		apiRoutes.POST("/categories/add", func(ctx *gin.Context) {
 			err := CategoryController.Save(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "Category created successfully"})
+				ctx.Redirect(http.StatusFound, "/view/categories")
 			}
 		})
 
@@ -61,34 +62,96 @@ func main() {
 				ctx.JSON(http.StatusOK, gin.H{"message": "Category deleted successfully"})
 			}
 		})
+
+		apiRoutes.POST("/products/add", func(ctx *gin.Context) {
+			err := ProductController.Save(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Category created successfully"})
+			}
+		})
+
+		apiRoutes.PUT("/products/:id", func(ctx *gin.Context) {
+			err := ProductController.Update(ctx)
+			if err != nil {
+				// ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Category updated successfully"})
+			}
+		})
+
+		apiRoutes.DELETE("/products/:id", func(ctx *gin.Context) {
+			err := ProductController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Category deleted successfully"})
+			}
+		})
+
+		apiRoutes.POST("/shops/add", func(ctx *gin.Context) {
+			err := ShopController.Save(ctx)
+			if err != nil {
+				ctx.HTML(http.StatusBadRequest, "createshop.html", gin.H{"error": err.Error()})
+			} else {
+				ctx.Redirect(http.StatusFound, "/view/shops")
+			}
+		})
+
+		apiRoutes.PUT("/shops/:id", func(ctx *gin.Context) {
+			err := ShopController.Update(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Shop updated successfully"})
+			}
+		})
+
+		apiRoutes.DELETE("/shops/:id", func(ctx *gin.Context) {
+			err := ShopController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Shop deleted successfully"})
+			}
+		})
 	}
 
 	viewRoutes := router.Group("/view")
 	{
 		viewRoutes.GET("/categories", CategoryController.ShowAll)
 
-		// Render the "Add Category" page
 		viewRoutes.GET("/categories/add", func(ctx *gin.Context) {
 			ctx.HTML(http.StatusOK, "createcategory.html", nil)
-		})
-
-		// Handle form submission for creating a category
-		viewRoutes.POST("/categories/add", func(ctx *gin.Context) {
-			err := CategoryController.Save(ctx)
-			if err != nil {
-				ctx.HTML(http.StatusBadRequest, "createcategory.html", gin.H{"error": err.Error()})
-			} else {
-				ctx.Redirect(http.StatusFound, "/view/categories")
-			}
 		})
 
 		viewRoutes.GET("/categories/edit/:id", func(ctx *gin.Context) {
 			CategoryController.EditCategory(ctx)
 		})
 
+		viewRoutes.GET("/shops", ShopController.ShowAll)
+
+		viewRoutes.GET("/shops/add", func(ctx *gin.Context) {
+			ctx.HTML(http.StatusOK, "createshop.html", nil)
+		})
+
+		viewRoutes.GET("/shops/edit/:id", func(ctx *gin.Context) {
+			ShopController.EditShop(ctx)
+		})
+
+		viewRoutes.GET("/products", ProductController.ShowAll)
+
+		viewRoutes.GET("/products/add", func(ctx *gin.Context) {
+			ctx.HTML(http.StatusOK, "createproduct.html", nil)
+		})
+
+		viewRoutes.GET("/products/edit/:id", func(ctx *gin.Context) {
+			ProductController.EditProduct(ctx)
+		})
+
 		viewRoutes.GET("/", homePageHandler)
 	}
-
 	router.Run(":8080")
 }
 
